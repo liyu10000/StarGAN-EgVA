@@ -1,0 +1,8 @@
+*.pyc
+__pycache__/
+
+data/
+stargan_celeba_128/
+stargan_celeba_256/
+stargan_rafd
+
