@@ -74,10 +74,11 @@ def get_loader(image_dir, attr_path, selected_attrs, crop_size=178, image_size=1
     transform = []
     if mode == 'train':
         transform.append(T.RandomHorizontalFlip())
-    transform.append(T.CenterCrop(crop_size))
+#     transform.append(T.CenterCrop(crop_size))
     transform.append(T.Resize(image_size))
     transform.append(T.ToTensor())
-    transform.append(T.Normalize(mean=(0.5, 0.5, 0.5), std=(0.5, 0.5, 0.5)))
+#     transform.append(T.Normalize(mean=(0.5, 0.5, 0.5), std=(0.5, 0.5, 0.5)))
+    transform.append(T.Normalize(mean=(0.56, 0.62, 0.74), std=(0.24, 0.21, 0.18)))  # for RaFD
     transform = T.Compose(transform)
 
     if dataset == 'CelebA':
