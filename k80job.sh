@@ -15,7 +15,6 @@ source activate py37
 # Train StarGAN using the RaFD dataset
 python main.py --mode train --dataset RaFD --image_size 128 \
                --c_dim 8 --rafd_image_dir data/RaFD/train \
-               --resume_iters None \
                --sample_dir stargan_rafd/samples --log_dir stargan_rafd/logs \
                --model_save_dir stargan_rafd/models --result_dir stargan_rafd/results
 
