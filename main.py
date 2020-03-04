@@ -57,8 +57,8 @@ if __name__ == '__main__':
     # Model configuration.
     parser.add_argument('--c_dim', type=int, default=5, help='dimension of domain labels (1st dataset)')
     parser.add_argument('--c2_dim', type=int, default=8, help='dimension of domain labels (2nd dataset)')
-    parser.add_argument('--celeba_crop_size', type=int, default=178, help='crop size for the CelebA dataset')
-    parser.add_argument('--rafd_crop_size', type=int, default=256, help='crop size for the RaFD dataset')
+    parser.add_argument('--celeba_crop_size', type=int, default=128, help='crop size for the CelebA dataset')
+    parser.add_argument('--rafd_crop_size', type=int, default=128, help='crop size for the RaFD dataset')
     parser.add_argument('--image_size', type=int, default=128, help='image resolution')
     parser.add_argument('--g_conv_dim', type=int, default=64, help='number of conv filters in the first layer of G')
     parser.add_argument('--d_conv_dim', type=int, default=64, help='number of conv filters in the first layer of D')
@@ -86,7 +86,7 @@ if __name__ == '__main__':
     parser.add_argument('--test_iters', type=int, default=100000, help='test model from this step')
 
     # Miscellaneous.
-    parser.add_argument('--num_workers', type=int, default=1)
+    parser.add_argument('--num_workers', type=int, default=12)
     parser.add_argument('--mode', type=str, default='train', choices=['train', 'test'])
     parser.add_argument('--use_tensorboard', type=str2bool, default=True)
 
@@ -101,9 +101,9 @@ if __name__ == '__main__':
 
     # Step size.
     parser.add_argument('--log_step', type=int, default=10)
-    parser.add_argument('--sample_step', type=int, default=500)
-    parser.add_argument('--model_save_step', type=int, default=5000)
-    parser.add_argument('--lr_update_step', type=int, default=500)
+    parser.add_argument('--sample_step', type=int, default=1000)
+    parser.add_argument('--model_save_step', type=int, default=2500)
+    parser.add_argument('--lr_update_step', type=int, default=1000)
 
     config = parser.parse_args()
     print(config)
