@@ -35,7 +35,20 @@
 2. Removed profile face shot at 0 and 180 degrees.
 
  - Config
-1. Propose to run 100000 iterations.
+1. Propose to run 120000 iterations.
+2. Silenced random crop, use mean and std as it is.
+
+ - Result
+1. Sample results are really good.
+
+
+### Exp4 (03/14/2020)
+ - Dataset
+1. AffectNet dataset.
+2. 196902 for train, 2701 for test.
+
+ - Config
+1. Propose to run 200000 iterations.
 2. Silenced random crop, use mean and std as it is.
 
  - Result

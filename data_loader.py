@@ -5,6 +5,9 @@ from PIL import Image
 import torch
 import os
 import random
+import pickle
+import numpy as np
+import pandas as pd
 
 
 class CelebA(data.Dataset):
@@ -67,15 +70,48 @@ class CelebA(data.Dataset):
         """Return the number of images."""
         return self.num_images
 
+    
+class AffectNet(data.Dataset):
+    def __init__(self, pkl_file, csv_file, root_dir, transform):
+        """
+        Args:
+            pkl_file (string): Path to the pkl file with file names.
+            csv_file (string): Path to the csv file with annotations.
+            root_dir (string): Directory with all the images.
+            transform (callable, optional): Optional transform to be applied on a sample.
+        """
+        self.root_dir = root_dir
+        self.transform = transform
+        self.df = None
+        df = pd.read_csv(csv_file)
+        df = df[df.expression < 8] # remove noise images
+        with open(pkl_file, 'rb') as f:
+            names = pickle.load(f)
+        names = [name[:-4] for name in names] # remove .png extention
+        df_touse = pd.DataFrame(data={'subDirectory_filePath': names})
+        df_touse = pd.merge(df_touse, df, how='inner', on=['subDirectory_filePath'])
+        self.df = df_touse
+        print('# of files to use', self.df.shape[0])
+        
+    def __len__(self):
+        return self.df.shape[0]
 
+    def __getitem__(self, idx):
+        img_name = os.path.join(self.root_dir,
+                                self.df.iloc[idx, 0]+'.png') # 0th col: subDirectory_filePath
+        image = Image.open(img_name)
+        label = self.df.iloc[idx, 6] # 6th col: expression
+        return self.transform(image), label
+    
+    
 def get_loader(image_dir, attr_path, selected_attrs, crop_size=178, image_size=128, 
-               batch_size=16, dataset='CelebA', mode='train', num_workers=1):
+               batch_size=16, dataset='RaFD', mode='train', num_workers=8):
     """Build and return a data loader."""
     transform = []
     if mode == 'train':
         transform.append(T.RandomHorizontalFlip())
 #     transform.append(T.CenterCrop(crop_size))
-    transform.append(T.Resize(image_size))
+#     transform.append(T.Resize(image_size))
     transform.append(T.ToTensor())
     transform.append(T.Normalize(mean=(0.5, 0.5, 0.5), std=(0.5, 0.5, 0.5)))
 #     transform.append(T.Normalize(mean=(0.56, 0.62, 0.74), std=(0.24, 0.21, 0.18)))  # for RaFD
@@ -84,10 +120,36 @@ def get_loader(image_dir, attr_path, selected_attrs, crop_size=178, image_size=1
     if dataset == 'CelebA':
         dataset = CelebA(image_dir, attr_path, selected_attrs, transform, mode)
     elif dataset == 'RaFD':
-        dataset = ImageFolder(image_dir, transform)
+#         dataset = ImageFolder(image_dir, transform)
+        pkl_file = '../AffectNet/faces_good.pkl'
+        csv_file = '../AffectNet/Manual_Labels/training.csv'
+        dataset = AffectNet(pkl_file, csv_file, image_dir, transform)
 
     data_loader = data.DataLoader(dataset=dataset,
                                   batch_size=batch_size,
                                   shuffle=(mode=='train'),
                                   num_workers=num_workers)
     return data_loader
+
+
+if __name__ == '__main__':
+#     # test dataset
+#     image_dir = '../AffectNet/faces'
+#     pkl_file = '../AffectNet/faces_good.pkl'
+#     csv_file = '../AffectNet/Manual_Labels/validation.csv'
+#     dataset = AffectNet(pkl_file, csv_file, image_dir, None)
+#     n = len(dataset)
+    
+    # test dataloader
+    image_dir = '../AffectNet/faces'
+    data_loader = get_loader(image_dir, None, None, batch_size=16)
+    data_iter = iter(data_loader)
+    inputs, labels = next(data_iter)
+    print(inputs.shape, labels.shape)
+    
+#     # test original dataloader
+#     image_dir = '../AffectNet/goodbad/val'
+#     data_loader = get_loader(image_dir, None, None, batch_size=16)
+#     data_iter = iter(data_loader)
+#     inputs, labels = next(data_iter)
+#     print(inputs.shape, labels.shape)

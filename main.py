@@ -69,9 +69,9 @@ if __name__ == '__main__':
     parser.add_argument('--lambda_gp', type=float, default=10, help='weight for gradient penalty')
     
     # Training configuration.
-    parser.add_argument('--dataset', type=str, default='CelebA', choices=['CelebA', 'RaFD', 'Both'])
-    parser.add_argument('--batch_size', type=int, default=32, help='mini-batch size')
-    parser.add_argument('--num_iters', type=int, default=100000, help='number of total iterations for training D')
+    parser.add_argument('--dataset', type=str, default='RaFD', choices=['CelebA', 'RaFD', 'Both'])
+    parser.add_argument('--batch_size', type=int, default=64, help='mini-batch size')
+    parser.add_argument('--num_iters', type=int, default=200000, help='number of total iterations for training D')
     parser.add_argument('--num_iters_decay', type=int, default=50000, help='number of iterations for decaying lr')
     parser.add_argument('--g_lr', type=float, default=0.0001, help='learning rate for G')
     parser.add_argument('--d_lr', type=float, default=0.0001, help='learning rate for D')
@@ -83,10 +83,10 @@ if __name__ == '__main__':
                         default=['Black_Hair', 'Blond_Hair', 'Brown_Hair', 'Male', 'Young'])
 
     # Test configuration.
-    parser.add_argument('--test_iters', type=int, default=100000, help='test model from this step')
+    parser.add_argument('--test_iters', type=int, default=200000, help='test model from this step')
 
     # Miscellaneous.
-    parser.add_argument('--num_workers', type=int, default=12)
+    parser.add_argument('--num_workers', type=int, default=16)
     parser.add_argument('--mode', type=str, default='train', choices=['train', 'test'])
     parser.add_argument('--use_tensorboard', type=str2bool, default=True)
 
@@ -101,8 +101,8 @@ if __name__ == '__main__':
 
     # Step size.
     parser.add_argument('--log_step', type=int, default=10)
-    parser.add_argument('--sample_step', type=int, default=1000)
-    parser.add_argument('--model_save_step', type=int, default=2500)
+    parser.add_argument('--sample_step', type=int, default=2000)
+    parser.add_argument('--model_save_step', type=int, default=5000)
     parser.add_argument('--lr_update_step', type=int, default=1000)
 
     config = parser.parse_args()
