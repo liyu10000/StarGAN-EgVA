@@ -45,6 +45,7 @@
 ### Exp4 (03/14/2020)
  - Dataset
 1. AffectNet dataset.
+3. Only use 8 emotion categories, remove grayscale images, remove those opencv/face_detect fails to detect.
 2. 196902 for train, 2701 for test.
 
  - Config
@@ -52,3 +53,7 @@
 2. Silenced random crop, use mean and std as it is.
 
  - Result
+1. Some of the sample results are good.
+
+
+### Exp5 (03/14/2020)

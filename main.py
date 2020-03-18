@@ -70,7 +70,7 @@ if __name__ == '__main__':
     
     # Training configuration.
     parser.add_argument('--dataset', type=str, default='RaFD', choices=['CelebA', 'RaFD', 'Both'])
-    parser.add_argument('--batch_size', type=int, default=64, help='mini-batch size')
+    parser.add_argument('--batch_size', type=int, default=32, help='mini-batch size')
     parser.add_argument('--num_iters', type=int, default=200000, help='number of total iterations for training D')
     parser.add_argument('--num_iters_decay', type=int, default=50000, help='number of iterations for decaying lr')
     parser.add_argument('--g_lr', type=float, default=0.0001, help='learning rate for G')
@@ -86,7 +86,7 @@ if __name__ == '__main__':
     parser.add_argument('--test_iters', type=int, default=200000, help='test model from this step')
 
     # Miscellaneous.
-    parser.add_argument('--num_workers', type=int, default=16)
+    parser.add_argument('--num_workers', type=int, default=12)
     parser.add_argument('--mode', type=str, default='train', choices=['train', 'test'])
     parser.add_argument('--use_tensorboard', type=str2bool, default=True)
 

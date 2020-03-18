@@ -7,5 +7,5 @@ __pycache__/
 data/
 stargan_celeba_128/
 stargan_celeba_256/
-stargan_rafd
-
+stargan_rafd/
+stargan_affectnet/
