@@ -56,4 +56,18 @@
 1. Some of the sample results are good.
 
 
-### Exp5 (03/14/2020)
+### Exp5 (03/18/2020)
+ - Idea
+1. Train a regressor (together with classifier) to test the effectiveness of regression.
+
+ - Dataset
+1. AffectNet dataset. The same as in *Exp4*.
+2. Have removed open mouths, reduced data from 190,000 to 170,000. Didn't apply in this experiment.
+3. Have regulated different emotion categories, by removing overlapping regions on va plane. Didn't apply in this experiment.
+4. Dataset and model logging folder in `AffectNet`.
+
+ - Config
+1. Almost the same hyper-parameters as in training StarGAN.
+2. Set weights on regression and classification equally to be 1 and 1.
+
+ - Result

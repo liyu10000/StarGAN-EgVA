@@ -123,8 +123,8 @@ def get_loader(image_dir, attr_path, selected_attrs, crop_size=178, image_size=1
     elif dataset == 'RaFD':
 #         dataset = ImageFolder(image_dir, transform)
         pkl_file = '../AffectNet/faces_good.pkl'
-#         csv_file = '../AffectNet/Manual_Labels/training.csv'
-        csv_file = '../AffectNet/Manual_Labels/validation.csv'
+        csv_file = '../AffectNet/Manual_Labels/training.csv'
+#         csv_file = '../AffectNet/Manual_Labels/validation.csv'
         dataset = AffectNet(pkl_file, csv_file, image_dir, transform)
 
     data_loader = data.DataLoader(dataset=dataset,
@@ -161,13 +161,15 @@ if __name__ == '__main__':
     csv_file = '../AffectNet/Manual_Labels/training.csv'
     df = pd.read_csv(csv_file)
     df = df[df.expression < 8] # remove noise images
+#     print(df.groupby(['expression']).count())
     with open(pkl_file, 'rb') as f:
         names = pickle.load(f)
     names = [name[:-4] for name in names] # remove .png extention
+    print('# files read from {}: {}'.format(pkl_file, len(names)))
     
     df_touse = pd.DataFrame(data={'subDirectory_filePath': names})
     df_touse = pd.merge(df_touse, df, how='inner', on=['subDirectory_filePath'])
-    print(df.groupby(['expression']).count())
+    print(df_touse.groupby(['expression']).count())
 
 #     names = random.sample(names, 1000)
 #     image_dir = '../AffectNet/faces'
