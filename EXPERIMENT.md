@@ -71,3 +71,28 @@
 2. Set weights on regression and classification equally to be 1 and 1.
 
  - Result
+1. Result on training set is good, but bad on validation set. One reason of bad performance on val dataset is data distribution is very different from val to train.
+
+
+### Exp6 (03/19/2020)
+ - Idea
+1. Basically the same idea as of *Exp5*, except adding additional validation steps during training to track overfit.
+
+ - Dataset
+1. The same dataset as of *Exp5*.
+
+ - Config
+1. Set weights on regression and classification to be 5 and 1, respectively.
+
+ - Result
+1. Results on training set is good, but bad on validation set.
+
+### Exp7 (03/20/2020)
+ - Idea
+1. Manually remove overlap of emotion categories on va plane. Start from faces_good3.pkl, end with faces_good4.pkl. Also resplit train/val and save to training4.csv and validation4.csv.
+2. Reduced number of images from 193089 to 137578.
+
+ - Dataset
+1. Use training4.csv and validation4.csv directly.
+
+ - Result

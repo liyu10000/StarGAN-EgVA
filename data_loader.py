@@ -157,7 +157,7 @@ if __name__ == '__main__':
 #     print(inputs.shape, labels.shape)
 
     # check category counts after removing bad images
-    pkl_file = '../AffectNet/faces_good.pkl'
+    pkl_file = '../AffectNet/faces_good3.pkl'
     csv_file = '../AffectNet/Manual_Labels/training.csv'
     df = pd.read_csv(csv_file)
     df = df[df.expression < 8] # remove noise images
