@@ -87,6 +87,7 @@
  - Result
 1. Results on training set is good, but bad on validation set.
 
+
 ### Exp7 (03/20/2020)
  - Idea
 1. Manually remove overlap of emotion categories on va plane. Start from faces_good3.pkl, end with faces_good4.pkl. Also resplit train/val and save to training4.csv and validation4.csv.
@@ -94,5 +95,47 @@
 
  - Dataset
 1. Use training4.csv and validation4.csv directly.
+
+ - Config
+1. Set weights on regression and classification to be 5 and 1, respectively.
+
+ - Result
+recall [0.81649485 0.92515593 0.49468085 0.31034483 0.34693878 0.0952381 0.48630137 0.07317073]
+precision [0.62460568 0.87084149 0.65957447 0.48214286 0.5862069  0.66666667 0.66981132 0.5       ]
+mean recall 0.44354067768567706
+mean precision 0.6324811718392941
+
+
+### Exp8 (03/20/2020)
+ - Idea
+1. The same setup as that in *Exp7*, except the weight on classfication loss is 0, in order to check that performance of sole regression.
+
+ - Result
+recall [0.00412371 0.0031185  0.12765957 0.14942529 0.         0.02380952 0.         0.63414634]
+precision [0.66666667 0.07142857 0.11538462 0.02471483 0.         0.25        nan 0.02138158]
+mean recall 0.11778536769450684
+mean precision nan
+
+
+### Exp9 (03/20/2020)
+ - Idea
+1. The same setup as that in *Exp7*, except the weight on regression loss is 0, in order to check that performance of sole classification.
+
+ - Dataset
+1. There is slight change to the dataset: reset the segmenting line between fear and surprise. Now that it is a vertical line
+
+ - Result
+recall [0.68972746 0.93802521 0.65898618 0.35185185 0.24       0.20588235 0.43410853 0.06060606]
+precision [0.6476378  0.87634936 0.63274336 0.54285714 0.48       0.26923077 0.47863248 0.22222222]
+mean recall 0.4473984551303103
+mean precision 0.5187091416462234
+
+
+### Exp10 (03/21/2020)
+ - Idea
+1. Train StarGAN on AffectNet dataset, with classification and regression
+
+ - Config
+1. set weights on classification and regresssion to be 1, 5.
 
  - Result

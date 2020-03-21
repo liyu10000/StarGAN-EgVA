@@ -1,11 +1,11 @@
 #!/bin/bash
-#SBATCH --job-name="ambergpu-shared"
-#SBATCH --output="ambergpu-shared.%j.%N.out"
+#SBATCH --job-name="ambergpu"
+#SBATCH --output="ambergpu.%j.%N.out"
 #SBATCH --no-requeue
-#SBATCH -p gpu-shared
-#SBATCH --gres=gpu:k80:2
-#SBATCH --ntasks-per-node=12
-#SBATCH -t 12:00:00
+#SBATCH -p gpu
+#SBATCH --gres=gpu:k80:4
+#SBATCH --ntasks-per-node=24
+#SBATCH -t 48:00:00
 
 module purge
 module load cuda/10.1
@@ -34,12 +34,15 @@ source activate py37
 #                --sample_dir stargan_affectnet/samples --log_dir stargan_affectnet/logs \
 #                --model_save_dir stargan_affectnet/models --result_dir stargan_affectnet/results
 
-# Test StarGAN using the AffectNet dataset
-python main.py --mode test --dataset RaFD --image_size 128 \
-               --c_dim 8 --rafd_image_dir ../AffectNet/faces \
-               --test_iters 200000 \
-               --sample_dir stargan_affectnet/samples --log_dir stargan_affectnet/logs \
-               --model_save_dir stargan_affectnet/models --result_dir stargan_affectnet/results
+# # Test StarGAN using the AffectNet dataset
+# python main.py --mode test --dataset RaFD --image_size 128 \
+#                --c_dim 8 --rafd_image_dir ../AffectNet/faces \
+#                --test_iters 200000 \
+#                --sample_dir stargan_affectnet/samples --log_dir stargan_affectnet/logs \
+#                --model_save_dir stargan_affectnet/models --result_dir stargan_affectnet/results
+
+# Train StarGAN_VA using the AffectNet dataset
+python main.py
 
 echo 'done'
 
