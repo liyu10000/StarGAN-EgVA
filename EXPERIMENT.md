@@ -123,6 +123,7 @@ mean precision nan
 
  - Dataset
 1. There is slight change to the dataset: reset the segmenting line between fear and surprise. Now that it is a vertical line
+2. training4.csv
 
  - Result
 recall [0.68972746 0.93802521 0.65898618 0.35185185 0.24       0.20588235 0.43410853 0.06060606]
@@ -135,6 +136,10 @@ mean precision 0.5187091416462234
  - Idea
 1. Train StarGAN on AffectNet dataset, with classification and regression
 
+ - Dataset
+1. training4.csv
+2. validation4.csv
+
  - Config
 1. set weights on classification and regresssion to be 1, 5.
 
@@ -146,7 +151,25 @@ mean precision 0.5187091416462234
  - Idea
 1. Train StarGAN on AffectNet dataset, with classification and regression
 
+ - Dataset
+1. training4.csv
+2. validation4.csv
+
  - Config
-1. set weights on classification and regresssion to be 1, 5.
+1. set weights on classification and regresssion to be 0.5, 20.
+
+ - Result
+
+
+### Exp12 (03/27/2020)
+ - Idea
+1. Train StarGAN on AffectNet dataset, with classification and regression
+
+ - Dataset
+1. training3.csv
+2. validation3.csv
+
+ - Config
+1. set weights on classification and regresssion to be 0.5, 20.
 
  - Result

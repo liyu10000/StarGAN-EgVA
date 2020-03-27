@@ -11,8 +11,8 @@ def read_path(label_path_file):
         for line in f.readlines():
             tokens = line.strip().split()
             cat = int(tokens[0])
-            v = float(tokens[1])
-            a = float(tokens[2])
+            v = (float(tokens[1]) + 1) / 2
+            a = (float(tokens[2]) + 1) / 2
             path.append([cat, v, a])
     return path
 
@@ -24,26 +24,22 @@ def main(config):
     cudnn.benchmark = True
 
     # Create directories if not exist.
-    if not os.path.exists(config.log_dir):
-        os.makedirs(config.log_dir)
-    if not os.path.exists(config.model_save_dir):
-        os.makedirs(config.model_save_dir)
-    if not os.path.exists(config.sample_dir):
-        os.makedirs(config.sample_dir)
-    if not os.path.exists(config.result_dir):
-        os.makedirs(config.result_dir)
+    os.makedirs(config.log_dir, exist_ok=True)
+    os.makedirs(config.model_save_dir, exist_ok=True)
+    os.makedirs(config.sample_dir, exist_ok=True)
+    os.makedirs(config.result_dir, exist_ok=True)
 
     # Data loader.
     if config.mode == 'train':
         # Data loader.
-        train_loader = get_loader(config.pkl_file, config.csv_file_train, config.image_dir, 
+        train_loader = get_loader(config.csv_file_train, config.image_dir, 
                                   config.batch_size, config.mode, config.num_workers)
 
         # Solver for training.
         solver = Solver(train_loader, config)
     elif config.mode == 'test' or config.mode == 'testpath':
         # Data loader.
-        test_loader  = get_loader(config.pkl_file, config.csv_file_test, config.image_dir, 
+        test_loader  = get_loader(config.csv_file_test, config.image_dir, 
                                   config.batch_size, config.mode, config.num_workers)
 
         # Solver for testing.
@@ -96,14 +92,13 @@ if __name__ == '__main__':
     parser.add_argument('--use_tensorboard', type=str2bool, default=True)
 
     # Directories.
-    parser.add_argument('--pkl_file', type=str, default='../AffectNet/faces_good4.pkl')
     parser.add_argument('--csv_file_train', type=str, default='../AffectNet/Manual_Labels/training4.csv')
     parser.add_argument('--csv_file_test', type=str, default='../AffectNet/Manual_Labels/validation4.csv')
     parser.add_argument('--image_dir', type=str, default='../AffectNet/faces')
-    parser.add_argument('--log_dir', type=str, default='stargan_affectnet/exp10/logs')
-    parser.add_argument('--model_save_dir', type=str, default='stargan_affectnet/exp10/models')
-    parser.add_argument('--sample_dir', type=str, default='stargan_affectnet/exp10/samples')
-    parser.add_argument('--result_dir', type=str, default='stargan_affectnet/exp10/results')
+    parser.add_argument('--log_dir', type=str, default='stargan_affectnet/')
+    parser.add_argument('--model_save_dir', type=str, default='stargan_affectnet/')
+    parser.add_argument('--sample_dir', type=str, default='stargan_affectnet/')
+    parser.add_argument('--result_dir', type=str, default='stargan_affectnet/')
 
     # Step size.
     parser.add_argument('--log_step', type=int, default=10)

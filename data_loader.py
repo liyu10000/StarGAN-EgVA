@@ -12,23 +12,20 @@ import pandas as pd
 
     
 class AffectNet(data.Dataset):
-    def __init__(self, pkl_file, csv_file, root_dir, transform):
+    def __init__(self, csv_file, root_dir, transform):
         """
         Args:
-            pkl_file (string): Path to the pkl file with file names.
             csv_file (string): Path to the csv file with annotations.
             root_dir (string): Directory with all the images.
             transform (callable, optional): Optional transform to be applied on a sample.
         """
         self.root_dir = root_dir
         self.transform = transform
-        self.df = None
         df = pd.read_csv(csv_file)        
         # Convert the range from [-1, 1] to [0, 1].
         df.valence = (df.valence + 1) / 2
         df.arousal = (df.arousal + 1) / 2
         self.df = df
-        print('# of files to use', self.df.shape[0])
         
     def __len__(self):
         return self.df.shape[0]
@@ -43,7 +40,7 @@ class AffectNet(data.Dataset):
         return self.transform(image), label, torch.FloatTensor((valence, arousal))
     
     
-def get_loader(pkl_file, csv_file, image_dir, batch_size, mode, num_workers):
+def get_loader(csv_file, image_dir, batch_size, mode, num_workers):
     """Build and return a data loader."""
     transform = []
     if mode == 'train':
@@ -55,7 +52,8 @@ def get_loader(pkl_file, csv_file, image_dir, batch_size, mode, num_workers):
 #     transform.append(T.Normalize(mean=(0.56, 0.62, 0.74), std=(0.24, 0.21, 0.18)))  # for RaFD
     transform = T.Compose(transform)
 
-    dataset = AffectNet(pkl_file, csv_file, image_dir, transform)
+    dataset = AffectNet(csv_file, image_dir, transform)
+    print('# of files to use', len(dataset))
 
     data_loader = data.DataLoader(dataset=dataset,
                                   batch_size=batch_size,
@@ -69,12 +67,12 @@ if __name__ == '__main__':
     image_dir = '../AffectNet/faces'
     pkl_file = '../AffectNet/faces_good4.pkl'
     csv_file = '../AffectNet/Manual_Labels/validation4.csv'
-    dataset = AffectNet(pkl_file, csv_file, image_dir, None)
+    dataset = AffectNet(csv_file, image_dir, None)
     n = len(dataset)
     
     # test dataloader
     image_dir = '../AffectNet/faces'
-    data_loader = get_loader(pkl_file, csv_file, image_dir, batch_size=16, mode='test', num_workers=2)
+    data_loader = get_loader(csv_file, image_dir, batch_size=16, mode='test', num_workers=2)
     data_iter = iter(data_loader)
     inputs, vas, labels = next(data_iter)
     print(inputs.shape, vas.shape, labels.shape)
@@ -101,11 +99,11 @@ if __name__ == '__main__':
 #     df_touse = pd.merge(df_touse, df, how='inner', on=['subDirectory_filePath'])
 #     print(df_touse.groupby(['expression']).count())
 
-# #     names = random.sample(names, 1000)
-# #     image_dir = '../AffectNet/faces'
-# #     sample_dir = '../AffectNet/faces_good_samples'
-# #     for name in names:
-# #         fin = os.path.join(image_dir, name+'.png')
-# #         if os.path.isfile(fin):
-# #             shutil.copy2(fin, sample_dir)
+#     names = random.sample(names, 1000)
+#     image_dir = '../AffectNet/faces'
+#     sample_dir = '../AffectNet/faces_good_samples'
+#     for name in names:
+#         fin = os.path.join(image_dir, name+'.png')
+#         if os.path.isfile(fin):
+#             shutil.copy2(fin, sample_dir)
     
