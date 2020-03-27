@@ -1,3 +1,7 @@
+*.txt
+*.csv
+*.jpg
+*.png
 *.pyc
 *.ipynb
 __pycache__/
@@ -5,7 +9,7 @@ __pycache__/
 *.out
 
 data/
+stargan_affectnet/
 stargan_celeba_128/
 stargan_celeba_256/
 stargan_rafd/
-stargan_affectnet/

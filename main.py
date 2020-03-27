@@ -5,6 +5,17 @@ from data_loader import get_loader
 from torch.backends import cudnn
 
 
+def read_path(label_path_file):
+    path = []
+    with open(label_path_file, 'r') as f:
+        for line in f.readlines():
+            tokens = line.strip().split()
+            cat = int(tokens[0])
+            v = float(tokens[1])
+            a = float(tokens[2])
+            path.append([cat, v, a])
+    return path
+
 def str2bool(v):
     return v.lower() in ('true')
 
@@ -30,7 +41,7 @@ def main(config):
 
         # Solver for training.
         solver = Solver(train_loader, config)
-    elif config.mode == 'test':
+    elif config.mode == 'test' or config.mode == 'testpath':
         # Data loader.
         test_loader  = get_loader(config.pkl_file, config.csv_file_test, config.image_dir, 
                                   config.batch_size, config.mode, config.num_workers)
@@ -42,6 +53,9 @@ def main(config):
         solver.train()
     elif config.mode == 'test':
         solver.test()
+    elif config.mode == 'testpath':
+        path = read_path(config.label_path_file)
+        solver.testpath(path)
 
 
 if __name__ == '__main__':
@@ -73,10 +87,12 @@ if __name__ == '__main__':
 
     # Test configuration.
     parser.add_argument('--test_iters', type=int, default=200000, help='test model from this step')
+    # Test path configuration.
+    parser.add_argument('--label_path_file', type=str, default='stargan_affectnet/label_path.txt', help='file to store (cat, v, a) values for test')
 
     # Miscellaneous.
     parser.add_argument('--num_workers', type=int, default=12)
-    parser.add_argument('--mode', type=str, default='train', choices=['train', 'test'])
+    parser.add_argument('--mode', type=str, default='train', choices=['train', 'test', 'testpath'])
     parser.add_argument('--use_tensorboard', type=str2bool, default=True)
 
     # Directories.

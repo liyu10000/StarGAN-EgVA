@@ -139,3 +139,14 @@ mean precision 0.5187091416462234
 1. set weights on classification and regresssion to be 1, 5.
 
  - Result
+1. Generated results are mainly controlled by cat label, cannot see any effect of va regulation.
+
+
+### Exp11 (03/27/2020)
+ - Idea
+1. Train StarGAN on AffectNet dataset, with classification and regression
+
+ - Config
+1. set weights on classification and regresssion to be 1, 5.
+
+ - Result

@@ -134,22 +134,28 @@ class Solver(object):
         return torch.mean((dydx_l2norm-1)**2)
 
     def label2onehot(self, labels):
-        """Convert label indices to one-hot vectors."""
+        """Convert label indices to one-hot vectors.
+        :param labels: N1
+        """
         batch_size = labels.size(0)
         out = torch.zeros(batch_size, self.c_dim)
         out[np.arange(batch_size), labels.long()] = 1
         return out
 
     def create_cls_labels(self, c_org):
-        """Generate target domain labels for debugging and testing."""
+        """Generate target domain labels for debugging and testing.
+        :param c_org: N1
+        """
         c_trg_list = []
         for i in range(self.c_dim):
-            c_trg = self.label2onehot(torch.ones(c_org.size(0))*i)
+            c_trg = self.label2onehot(torch.ones(c_org.size(0)) * i)
             c_trg_list.append(c_trg.to(self.device))
         return c_trg_list
     
     def create_reg_labels(self, r_org):
-        """Generate target va scores for debugging and testing."""
+        """Generate target va scores for debugging and testing.
+        :param r_org: N2
+        """
         centers = [
             [0.502170, 0.497995],
             [0.832602, 0.567080],
@@ -162,10 +168,24 @@ class Solver(object):
         ]
         r_trg_list = []
         for i in range(self.c_dim):
-            r_trg = torch.tensor([centers[i]]*r_org.size(0))
+            r_trg = torch.tensor([centers[i]] * r_org.size(0))
             r_trg_list.append(r_trg.to(self.device))
         return r_trg_list
-    
+
+    def create_path_labels(self, batch_size, path):
+        """Generate target cat and va values for testing.
+        :param batch_size: batch size, may not equal to self.batch_size at last batch
+        :param path: list of [cat, v, a]
+        """
+        c_trg_list = []
+        r_trg_list = []
+        for cat, v, a in path:
+            c_trg = self.label2onehot(torch.tensor([cat] * batch_size))
+            c_trg_list.append(c_trg.to(self.device))
+            r_trg = torch.tensor([[v, a]] * batch_size)
+            r_trg_list.append(r_trg.to(self.device))
+        return c_trg_list, r_trg_list
+
     def classification_loss(self, logit, target):
         """Compute binary or softmax cross entropy loss."""
         return F.cross_entropy(logit, target)
@@ -225,12 +245,12 @@ class Solver(object):
             x_real = x_real.to(self.device)           # Input images.
             c_org = c_org.to(self.device)             # Original domain labels.
             c_trg = c_trg.to(self.device)             # Target domain labels.
-            r_org = r_org.to(self.device)
-            r_trg = r_trg.to(self.device)
+            r_org = r_org.to(self.device)             # Original va values.
+            r_trg = r_trg.to(self.device)             # Target va values.
             label_org = label_org.to(self.device)     # Labels for computing classification loss.
             label_trg = label_trg.to(self.device)     # Labels for computing classification loss.
-            va_org = va_org.to(self.device)
-            va_trg = va_trg.to(self.device)
+            va_org = va_org.to(self.device)           # VA values for computing regression loss.
+            va_trg = va_trg.to(self.device)           # VA values for computing regression loss.
 
             # =================================================================================== #
             #                             2. Train the discriminator                              #
@@ -352,6 +372,32 @@ class Solver(object):
                 x_real = x_real.to(self.device)
                 c_trg_list = self.create_cls_labels(c_org)
                 r_trg_list = self.create_reg_labels(r_org)
+
+                # Translate images.
+                x_fake_list = [x_real]
+                for c_trg, r_trg in zip(c_trg_list, r_trg_list):
+                    x_fake_list.append(self.G(x_real, c_trg, r_trg))
+
+                # Save the translated images.
+                x_concat = torch.cat(x_fake_list, dim=3)
+                result_path = os.path.join(self.result_dir, '{}-images.jpg'.format(i+1))
+                save_image(self.denorm(x_concat.data.cpu()), result_path, nrow=1, padding=0)
+                print('Saved real and fake images into {}...'.format(result_path))
+
+    def testpath(self, path):
+        """Translate images using StarGAN given (cat, v, a) path."""
+        # Load the trained generator.
+        self.restore_model(self.test_iters)
+
+        data_loader = self.data_loader
+        
+        with torch.no_grad():
+            for i, (x_real, _, _) in enumerate(data_loader):
+
+                # Prepare input images and target domain labels.
+                batch_size = x_real.size(0)
+                x_real = x_real.to(self.device)
+                c_trg_list, r_trg_list = self.create_path_labels(batch_size, path)
 
                 # Translate images.
                 x_fake_list = [x_real]
