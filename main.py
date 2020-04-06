@@ -10,6 +10,9 @@ def read_path(label_path_file):
     with open(label_path_file, 'r') as f:
         for line in f.readlines():
             tokens = line.strip().split()
+            # read till a blank line
+            if (not tokens) or (len(tokens) == 0):
+                break
             cat = int(tokens[0])
             v = (float(tokens[1]) + 1) / 2
             a = (float(tokens[2]) + 1) / 2
@@ -71,7 +74,7 @@ if __name__ == '__main__':
     parser.add_argument('--lambda_gp', type=float, default=10, help='weight for gradient penalty')
     
     # Training configuration.
-    parser.add_argument('--batch_size', type=int, default=64, help='mini-batch size')
+    parser.add_argument('--batch_size', type=int, default=32, help='mini-batch size')
     parser.add_argument('--num_iters', type=int, default=200000, help='number of total iterations for training D')
     parser.add_argument('--num_iters_decay', type=int, default=50000, help='number of iterations for decaying lr')
     parser.add_argument('--g_lr', type=float, default=0.0001, help='learning rate for G')
@@ -87,7 +90,7 @@ if __name__ == '__main__':
     parser.add_argument('--label_path_file', type=str, default='stargan_affectnet/label_path.txt', help='file to store (cat, v, a) values for test')
 
     # Miscellaneous.
-    parser.add_argument('--num_workers', type=int, default=12)
+    parser.add_argument('--num_workers', type=int, default=8)
     parser.add_argument('--mode', type=str, default='train', choices=['train', 'test', 'testpath'])
     parser.add_argument('--use_tensorboard', type=str2bool, default=True)
 

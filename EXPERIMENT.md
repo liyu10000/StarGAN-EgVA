@@ -159,6 +159,7 @@ mean precision 0.5187091416462234
 1. set weights on classification and regresssion to be 0.5, 20.
 
  - Result
+1. Results are better than *Exp10*. There is "gradual" shift from one emotion to another.
 
 
 ### Exp12 (03/27/2020)
@@ -173,3 +174,5 @@ mean precision 0.5187091416462234
 1. set weights on classification and regresssion to be 0.5, 20.
 
  - Result
+1. Results are better than *Exp10*. There is "gradual" shift from one emotion to another.
+
