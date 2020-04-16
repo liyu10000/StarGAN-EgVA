@@ -176,3 +176,16 @@ mean precision 0.5187091416462234
  - Result
 1. Results are better than *Exp10*. There is "gradual" shift from one emotion to another.
 
+
+### Exp13 (04/16/2020)
+ - Idea
+1. Train StarGAN on AffectNet dataset, with only regression, as a comparison to *Exp12*
+
+ - Dataset
+1. training3.csv
+2. validation3.csv
+
+ - Config
+1. set weights on classification and regresssion to be 0, 40.
+
+ - Result

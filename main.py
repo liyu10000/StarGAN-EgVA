@@ -74,7 +74,7 @@ if __name__ == '__main__':
     parser.add_argument('--lambda_gp', type=float, default=10, help='weight for gradient penalty')
     
     # Training configuration.
-    parser.add_argument('--batch_size', type=int, default=32, help='mini-batch size')
+    parser.add_argument('--batch_size', type=int, default=16, help='mini-batch size')
     parser.add_argument('--num_iters', type=int, default=200000, help='number of total iterations for training D')
     parser.add_argument('--num_iters_decay', type=int, default=50000, help='number of iterations for decaying lr')
     parser.add_argument('--g_lr', type=float, default=0.0001, help='learning rate for G')
@@ -95,8 +95,8 @@ if __name__ == '__main__':
     parser.add_argument('--use_tensorboard', type=str2bool, default=True)
 
     # Directories.
-    parser.add_argument('--csv_file_train', type=str, default='../AffectNet/Manual_Labels/training4.csv')
-    parser.add_argument('--csv_file_test', type=str, default='../AffectNet/Manual_Labels/validation4.csv')
+    parser.add_argument('--csv_file_train', type=str, default='../AffectNet/Manual_Labels/training3.csv')
+    parser.add_argument('--csv_file_test', type=str, default='../AffectNet/Manual_Labels/validation3.csv')
     parser.add_argument('--image_dir', type=str, default='../AffectNet/faces')
     parser.add_argument('--log_dir', type=str, default='stargan_affectnet/')
     parser.add_argument('--model_save_dir', type=str, default='stargan_affectnet/')
