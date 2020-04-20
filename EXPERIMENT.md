@@ -189,3 +189,6 @@ mean precision 0.5187091416462234
 1. set weights on classification and regresssion to be 0, 40.
 
  - Result
+1. There is difference, at testing, when using all zero emotion category than using corresponding category.
+2. Probably have to completely remove the module of classification.
+
