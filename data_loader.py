@@ -34,10 +34,9 @@ class AffectNet(data.Dataset):
         img_name = os.path.join(self.root_dir,
                                 self.df.iloc[idx, 0]+'.png') # 0th col: subDirectory_filePath
         image = Image.open(img_name)
-        label = self.df.iloc[idx, 1] # 1th col: expression
         valence = self.df.iloc[idx, 2] # 2th col: valence
         arousal = self.df.iloc[idx, 3] # 3th col: arousal
-        return self.transform(image), label, torch.FloatTensor((valence, arousal))
+        return self.transform(image), torch.FloatTensor((valence, arousal))
     
     
 def get_loader(csv_file, image_dir, batch_size, mode, num_workers):
@@ -69,41 +68,3 @@ if __name__ == '__main__':
     csv_file = '../AffectNet/Manual_Labels/validation4.csv'
     dataset = AffectNet(csv_file, image_dir, None)
     n = len(dataset)
-    
-    # test dataloader
-    image_dir = '../AffectNet/faces'
-    data_loader = get_loader(csv_file, image_dir, batch_size=16, mode='test', num_workers=2)
-    data_iter = iter(data_loader)
-    inputs, vas, labels = next(data_iter)
-    print(inputs.shape, vas.shape, labels.shape)
-    
-#     # test original dataloader
-#     image_dir = '../AffectNet/goodbad/val'
-#     data_loader = get_loader(image_dir, None, None, batch_size=16)
-#     data_iter = iter(data_loader)
-#     inputs, labels = next(data_iter)
-#     print(inputs.shape, labels.shape)
-
-#     # check category counts after removing bad images
-#     pkl_file = '../AffectNet/faces_good3.pkl'
-#     csv_file = '../AffectNet/Manual_Labels/training.csv'
-#     df = pd.read_csv(csv_file)
-#     df = df[df.expression < 8] # remove noise images
-# #     print(df.groupby(['expression']).count())
-#     with open(pkl_file, 'rb') as f:
-#         names = pickle.load(f)
-#     names = [name[:-4] for name in names] # remove .png extention
-#     print('# files read from {}: {}'.format(pkl_file, len(names)))
-    
-#     df_touse = pd.DataFrame(data={'subDirectory_filePath': names})
-#     df_touse = pd.merge(df_touse, df, how='inner', on=['subDirectory_filePath'])
-#     print(df_touse.groupby(['expression']).count())
-
-#     names = random.sample(names, 1000)
-#     image_dir = '../AffectNet/faces'
-#     sample_dir = '../AffectNet/faces_good_samples'
-#     for name in names:
-#         fin = os.path.join(image_dir, name+'.png')
-#         if os.path.isfile(fin):
-#             shutil.copy2(fin, sample_dir)
-    

@@ -192,3 +192,17 @@ mean precision 0.5187091416462234
 1. There is difference, at testing, when using all zero emotion category than using corresponding category.
 2. Probably have to completely remove the module of classification.
 
+
+### Exp14 (04/20/2020)
+ - Idea
+1. Remove classification module completely from the network.
+2. Train StarGAN on AffectNet dataset, only with regression.
+
+ - Dataset
+1. training3.csv
+2. validation3.csv
+
+ - Config
+1. set weights on regression to be 40.
+
+ - Result
