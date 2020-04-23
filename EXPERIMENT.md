@@ -206,3 +206,4 @@ mean precision 0.5187091416462234
 1. set weights on regression to be 40.
 
  - Result
+1. Results are actually very good. It's more consistent than *Exp12* with varied cat input, and also more prominent than *Exp12* with zero cat input.
