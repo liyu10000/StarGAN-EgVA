@@ -5,7 +5,9 @@ from torchvision.utils import save_image
 import torch
 import torch.nn.functional as F
 import numpy as np
+import pandas as pd
 import os
+import sys
 import time
 import datetime
 
@@ -44,6 +46,11 @@ class Solver(object):
         self.resume_iters = config.resume_iters
 
         # Test configurations.
+        self.infer_cat = config.infer_cat
+        df = pd.read_csv(config.csv_file_train)
+        df.valence = (df.valence + 1) / 2
+        df.arousal = (df.arousal + 1) / 2
+        self.df = df # used for inferring cat from va
         self.test_iters = config.test_iters
 
         # Miscellaneous.
@@ -55,7 +62,7 @@ class Solver(object):
         self.sample_dir = config.sample_dir
         self.model_save_dir = config.model_save_dir
         self.result_dir = config.result_dir
-
+        
         # Step size.
         self.log_step = config.log_step
         self.sample_step = config.sample_step
@@ -142,6 +149,21 @@ class Solver(object):
         out[np.arange(batch_size), labels.long()] = 1
         return out
 
+    def infer_from_va(self, v, a, batch_size):
+        """ Infer label category from v,a values.
+        """
+        radius = 0.025
+        neighbor = self.df[((self.df.valence - v)**2 + (self.df.arousal - a)**2) <= radius**2]
+        if len(neighbor) == 0:
+            print('ERROR: no cat found for v {}, a {}'.format(v, a))
+            sys.exit()
+        neighbor = neighbor.groupby('expression').groups
+        distrib = [0] * self.c_dim
+        for cat in neighbor:
+            distrib[cat] = len(neighbor[cat])
+        distrib = [d/sum(distrib) for d in distrib]
+        return torch.tensor([distrib] * batch_size)
+
     def create_cls_labels(self, c_org):
         """Generate target domain labels for debugging and testing.
         :param c_org: N1
@@ -176,11 +198,15 @@ class Solver(object):
         """Generate target cat and va values for testing.
         :param batch_size: batch size, may not equal to self.batch_size at last batch
         :param path: list of [cat, v, a]
+        :param infer_cat: use given cat, or infer from v,a values
         """
         c_trg_list = []
         r_trg_list = []
         for cat, v, a in path:
-            c_trg = self.label2onehot(torch.tensor([cat] * batch_size))
+            if self.infer_cat:
+                c_trg = self.infer_from_va(v, a, batch_size)
+            else:
+                c_trg = self.label2onehot(torch.tensor([cat] * batch_size))
             c_trg_list.append(c_trg.to(self.device))
             r_trg = torch.tensor([[v, a]] * batch_size)
             r_trg_list.append(r_trg.to(self.device))

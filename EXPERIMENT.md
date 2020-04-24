@@ -165,6 +165,7 @@ mean precision 0.5187091416462234
 ### Exp12 (03/27/2020)
  - Idea
 1. Train StarGAN on AffectNet dataset, with classification and regression
+2. Infer emotion category from va values at testing
 
  - Dataset
 1. training3.csv
@@ -175,6 +176,7 @@ mean precision 0.5187091416462234
 
  - Result
 1. Results are better than *Exp10*. There is "gradual" shift from one emotion to another.
+2. Results are better than *Exp13* and *Exp14*, when inferring category from va.
 
 
 ### Exp13 (04/16/2020)

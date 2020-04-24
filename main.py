@@ -87,6 +87,7 @@ if __name__ == '__main__':
     # Test configuration.
     parser.add_argument('--test_iters', type=int, default=200000, help='test model from this step')
     # Test path configuration.
+    parser.add_argument('--infer_cat', type=str2bool, default=False, help='infer emotion category from va')
     parser.add_argument('--label_path_file', type=str, default='stargan_affectnet/label_path.txt', help='file to store (cat, v, a) values for test')
 
     # Miscellaneous.
