@@ -6,6 +6,7 @@
 *.ipynb
 __pycache__/
 
+*.sh
 *.out
 
 data/

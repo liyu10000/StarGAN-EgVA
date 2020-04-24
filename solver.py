@@ -51,6 +51,7 @@ class Solver(object):
         df.valence = (df.valence + 1) / 2
         df.arousal = (df.arousal + 1) / 2
         self.df = df # used for inferring cat from va
+        self.test_1st_batch = config.test_1st_batch
         self.test_iters = config.test_iters
 
         # Miscellaneous.
@@ -435,3 +436,6 @@ class Solver(object):
                 result_path = os.path.join(self.result_dir, '{}-images.jpg'.format(i+1))
                 save_image(self.denorm(x_concat.data.cpu()), result_path, nrow=1, padding=0)
                 print('Saved real and fake images into {}...'.format(result_path))
+
+                if self.test_1st_batch:
+                    break
