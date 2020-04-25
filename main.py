@@ -6,18 +6,30 @@ from torch.backends import cudnn
 
 
 def read_path(label_path_file):
-    path = []
+    paths = []
+    start = False
     with open(label_path_file, 'r') as f:
         for line in f.readlines():
+            line = line.strip()
+            if (not line) or line.startswith('#'):
+                continue
             tokens = line.strip().split()
-            # read till a blank line
-            if (not tokens) or (len(tokens) == 0):
-                break
-            cat = int(tokens[0])
-            v = (float(tokens[1]) + 1) / 2
-            a = (float(tokens[2]) + 1) / 2
-            path.append([cat, v, a])
-    return path
+            if not start:
+                name = tokens[0]
+                total = int(tokens[1])
+                path = []
+                count = 0
+                start = True
+            else:
+                cat = int(tokens[0])
+                v = (float(tokens[1]) + 1) / 2
+                a = (float(tokens[2]) + 1) / 2
+                path.append([cat, v, a])
+                count += 1
+            if count == total:
+                paths.append({'name':name, 'path':path})
+                start = False
+    return paths
 
 def str2bool(v):
     return v.lower() in ('true')

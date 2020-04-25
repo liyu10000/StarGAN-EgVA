@@ -344,7 +344,7 @@ class Solver(object):
                 save_image(self.denorm(x_concat.data.cpu()), result_path, nrow=1, padding=0)
                 print('Saved real and fake images into {}...'.format(result_path))
 
-    def testpath(self, path):
+    def testpath(self, paths):
         """Translate images using StarGAN given (cat, v, a) path."""
         # Load the trained generator.
         self.restore_model(self.test_iters)
@@ -357,18 +357,22 @@ class Solver(object):
                 # Prepare input images and target domain labels.
                 batch_size = x_real.size(0)
                 x_real = x_real.to(self.device)
-                r_trg_list = self.create_path_labels(batch_size, path)
 
-                # Translate images.
-                x_fake_list = [x_real]
-                for r_trg in r_trg_list:
-                    x_fake_list.append(self.G(x_real, r_trg))
+                for path in paths:
+                    name = path['name']
+                    path = path['path']
+                    r_trg_list = self.create_path_labels(batch_size, path)
 
-                # Save the translated images.
-                x_concat = torch.cat(x_fake_list, dim=3)
-                result_path = os.path.join(self.result_dir, '{}-images.jpg'.format(i+1))
-                save_image(self.denorm(x_concat.data.cpu()), result_path, nrow=1, padding=0)
-                print('Saved real and fake images into {}...'.format(result_path))
+                    # Translate images.
+                    x_fake_list = [x_real]
+                    for r_trg in r_trg_list:
+                        x_fake_list.append(self.G(x_real, r_trg))
+
+                    # Save the translated images.
+                    x_concat = torch.cat(x_fake_list, dim=3)
+                    result_path = os.path.join(self.result_dir, '{}-images-{}.jpg'.format(i+1, name))
+                    save_image(self.denorm(x_concat.data.cpu()), result_path, nrow=1, padding=0)
+                    print('Saved real and fake images into {}...'.format(result_path))
 
                 if self.test_1st_batch:
                     break
