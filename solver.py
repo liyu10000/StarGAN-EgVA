@@ -354,6 +354,10 @@ class Solver(object):
         with torch.no_grad():
             for i, (x_real, _) in enumerate(data_loader):
 
+                # take samples by idxs
+                idxs = [2, 3, 7, 9, 20, 21]
+                x_real = x_real[idxs]
+
                 # Prepare input images and target domain labels.
                 batch_size = x_real.size(0)
                 x_real = x_real.to(self.device)
@@ -370,7 +374,7 @@ class Solver(object):
 
                     # Save the translated images.
                     x_concat = torch.cat(x_fake_list, dim=3)
-                    result_path = os.path.join(self.result_dir, '{}-images-{}.jpg'.format(i+1, name))
+                    result_path = os.path.join(self.result_dir, '{}-images-{}.png'.format(i+1, name))
                     save_image(self.denorm(x_concat.data.cpu()), result_path, nrow=1, padding=0)
                     print('Saved real and fake images into {}...'.format(result_path))
 
