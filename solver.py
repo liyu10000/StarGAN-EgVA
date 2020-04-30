@@ -422,7 +422,7 @@ class Solver(object):
             for i, (x_real, _, _) in enumerate(data_loader):
 
                 # take samples by idxs
-                idxs = [2, 3, 7, 9, 20]
+                idxs = [2, 3, 7, 9, 20, 28]
                 x_real = x_real[idxs]
 
                 # Prepare input images and target domain labels.
