@@ -1,8 +1,8 @@
 import os
 import argparse
+from torch.backends import cudnn
 from solver import Solver
 from data_loader import get_loader
-from torch.backends import cudnn
 
 
 def read_path(label_path_file):
@@ -49,14 +49,12 @@ def main(config):
         # Data loader.
         train_loader = get_loader(config.csv_file_train, config.image_dir, 
                                   config.batch_size, config.mode, config.num_workers)
-
         # Solver for training.
         solver = Solver(train_loader, config)
-    elif config.mode == 'test' or config.mode == 'testpath':
+    else:
         # Data loader.
         test_loader  = get_loader(config.csv_file_test, config.image_dir, 
                                   config.batch_size, config.mode, config.num_workers)
-
         # Solver for testing.
         solver = Solver(test_loader, config)
 
@@ -67,6 +65,8 @@ def main(config):
     elif config.mode == 'testpath':
         paths = read_path(config.label_path_file)
         solver.testpath(paths)
+    elif config.mode == 'testaug':
+        solver.testaug()
 
 
 if __name__ == '__main__':
@@ -105,13 +105,13 @@ if __name__ == '__main__':
 
     # Miscellaneous.
     parser.add_argument('--num_workers', type=int, default=8)
-    parser.add_argument('--mode', type=str, default='train', choices=['train', 'test', 'testpath'])
+    parser.add_argument('--mode', type=str, default='train', choices=['train', 'test', 'testpath', 'testaug'])
     parser.add_argument('--use_tensorboard', type=str2bool, default=True)
 
     # Directories.
-    parser.add_argument('--csv_file_train', type=str, default='../AffectNet/Manual_Labels/training3.csv')
-    parser.add_argument('--csv_file_test', type=str, default='../AffectNet/Manual_Labels/validation3.csv')
-    parser.add_argument('--image_dir', type=str, default='../AffectNet/faces')
+    parser.add_argument('--csv_file_train', type=str, default='training.csv')
+    parser.add_argument('--csv_file_test', type=str, default='validation.csv')
+    parser.add_argument('--image_dir', type=str, default='faces')
     parser.add_argument('--log_dir', type=str, default='stargan_affectnet/')
     parser.add_argument('--model_save_dir', type=str, default='stargan_affectnet/')
     parser.add_argument('--sample_dir', type=str, default='stargan_affectnet/')

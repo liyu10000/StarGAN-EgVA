@@ -1,15 +1,17 @@
 from model import Generator
 from model import Discriminator
-from torch.autograd import Variable
 from torchvision.utils import save_image
 import torch
 import torch.nn.functional as F
-import numpy as np
-import pandas as pd
 import os
 import sys
+import cv2
 import time
+import random
 import datetime
+import numpy as np
+import pandas as pd
+from tqdm import tqdm
 
 
 class Solver(object):
@@ -156,8 +158,9 @@ class Solver(object):
         radius = 0.025
         neighbor = self.df[((self.df.valence - v)**2 + (self.df.arousal - a)**2) <= radius**2]
         if len(neighbor) == 0:
-            print('ERROR: no cat found for v {}, a {}'.format(v, a))
-            sys.exit()
+            # print('ERROR: no cat found for v {}, a {}'.format(v, a))
+            # sys.exit()
+            return None
         neighbor = neighbor.groupby('expression').groups
         distrib = [0] * self.c_dim
         for cat in neighbor:
@@ -206,6 +209,8 @@ class Solver(object):
         for cat, v, a in path:
             if self.infer_cat:
                 c_trg = self.infer_from_va(v, a, batch_size)
+                if c_trg is None:
+                    continue
             else:
                 c_trg = self.label2onehot(torch.tensor([cat] * batch_size))
             c_trg_list.append(c_trg.to(self.device))
@@ -415,15 +420,14 @@ class Solver(object):
         """Translate images using StarGAN given (cat, v, a) path."""
         # Load the trained generator.
         self.restore_model(self.test_iters)
-
         data_loader = self.data_loader
         
         with torch.no_grad():
             for i, (x_real, _, _) in enumerate(data_loader):
 
-                # take samples by idxs
-                idxs = [2, 3, 7, 9, 20, 28]
-                x_real = x_real[idxs]
+                # # take samples by idxs
+                # idxs = [2, 3, 7, 9, 20, 28]
+                # x_real = x_real[idxs]
 
                 # Prepare input images and target domain labels.
                 batch_size = x_real.size(0)
@@ -447,3 +451,67 @@ class Solver(object):
 
                 if self.test_1st_batch:
                     break
+
+    def testaug(self):
+        """Generate images using StarGAN-EgVA as data augmentation."""
+        self.restore_model(self.test_iters)
+        data_loader = self.data_loader
+        
+        # possibility to generate faces from different domain emotions
+        augrate = [0.6, 0.4, 0.8, 1.0, 1.0, 1.0, 0.8, 1.0] # roughly 100,000
+        randrange = 0.05 # random range to sample v,a point (note v,a in r_org are normalized to 0~1)
+        random.seed(42)
+
+        # create folder and csv to store new v,a values and image names
+        name = 'aug1'
+        img_dir = os.path.join(self.result_dir, name)
+        os.makedirs(img_dir, exist_ok=True)
+        csv_file = os.path.join(self.result_dir, name+'.csv')
+        keys = ['subDirectory_filePath', 'expression', 'valence', 'arousal']
+        info = {k:[] for k in keys}
+
+        with torch.no_grad():
+            for i, (x_real, c_org, r_org) in tqdm(enumerate(data_loader), total=len(data_loader), desc=name, ncols=100):
+                # Prepare input images and target domain labels.
+                batch_size = x_real.size(0)
+                c_org = c_org.numpy()
+                r_org = r_org.numpy()
+                keep_list = []
+                c_trg_list, r_trg_list = [], []
+                for j in range(batch_size):
+                    c = c_org[j]
+                    if random.random() < augrate[c]:
+                        va = r_org[j]
+                        newv = va[0] + random.uniform(-randrange, randrange)
+                        newa = va[1] + random.uniform(-randrange, randrange)
+                        newc = self.infer_from_va(newv, newa, 1)
+                        if newc is not None:
+                            keep_list.append(j)
+                            c_trg_list.append(newc)
+                            r_trg_list.append(torch.tensor([[newv, newa]]))
+
+                            info['expression'].append(c)      # store original c
+                            info['valence'].append(newv*2-1)  # convert back to [-1, 1]
+                            info['arousal'].append(newa*2-1)
+
+                x_real = x_real[keep_list]
+
+                # generate images
+                for j, x, c, va in zip(keep_list, x_real, c_trg_list, r_trg_list):
+                    x = x.unsqueeze(0).to(self.device)
+                    c = c.to(self.device)
+                    va = va.to(self.device)
+                    img = self.G(x, c, va)
+                    img = self.denorm(img.data.cpu()).numpy() # 1,3,H,W
+                    img = np.squeeze(img, axis=0) # 3,H,W
+                    img = np.transpose(img, (1,2,0)) # H,W,3
+                    img = img * 255
+                    img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+                    img_name = '{}/{}_{}'.format(name, i, j)
+                    info['subDirectory_filePath'].append(img_name)
+                    img_path = os.path.join(self.result_dir, img_name+'.png')
+                    cv2.imwrite(img_path, img)
+
+        # save infor into csv
+        df = pd.DataFrame(data=info)
+        df.to_csv(csv_file, index=False, columns=keys)
