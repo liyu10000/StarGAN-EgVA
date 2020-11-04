@@ -286,3 +286,8 @@ mean precision 0.5187091416462234
 
  - Result
 1. Results on 'aug3' are better than expected, mse scores are not as bad as the generated images.
+
+
+### Exp21 (08/07/2020)
+ - Idea
+1. Repeat *Exp13*, except on more coarse data, so that when used as baseline, proposed method improves more.
